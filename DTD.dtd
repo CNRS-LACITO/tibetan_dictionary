@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT Vocabulaire (Chapitre+)>
+<!ATTLIST Vocabulaire NomComplet CDATA #REQUIRED>
+<!ELEMENT Chapitre (TitreFr, TitreTib, Section+)>
+<!ATTLIST Chapitre Nom CDATA #REQUIRED>
+<!ELEMENT Section (TitreFr, TitreTib, Entrée+)>
+<!ATTLIST Section Nom CDATA #REQUIRED>
+<!ELEMENT TitreFr (#PCDATA)>
+<!ELEMENT TitreTib (#PCDATA)>
+
+<!ELEMENT Entrée (Définition, Exemple*)>
+<!ELEMENT Définition (DefFr, DefTib)>
+<!ELEMENT DefFr (Vedette, SynDefFr*)>
+<!ELEMENT Vedette (#PCDATA)>
+<!ATTLIST Vedette gram CDATA #IMPLIED>
+<!ATTLIST Vedette niv CDATA #IMPLIED>
+<!ATTLIST Vedette péj CDATA #IMPLIED>
+<!ELEMENT DefTib (SynDefTib)+>
+<!ELEMENT SynDefFr (#PCDATA)>
+<!ELEMENT SynDefTib (#PCDATA)>
+<!ATTLIST SynDefFr gram CDATA #IMPLIED>
+<!ATTLIST SynDefFr niv CDATA #IMPLIED>
+<!ATTLIST SynDefFr péj CDATA #IMPLIED>
+<!ATTLIST SynDefTib gram CDATA #IMPLIED>
+<!ATTLIST SynDefTib niv CDATA #IMPLIED>
+<!ATTLIST SynDefTib phon CDATA #IMPLIED>
+<!ATTLIST SynDefTib péj CDATA #IMPLIED>
+
+<!ELEMENT Exemple (TxtTib, TxtFr)>
+<!ELEMENT TxtTib (SynEx+)>
+<!ELEMENT TxtFr (SynEx+)>
+<!ELEMENT SynEx (#PCDATA)>
+<!ATTLIST SynEx niv CDATA #IMPLIED>
+<!ATTLIST SynEx phon CDATA #IMPLIED>
