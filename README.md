@@ -46,6 +46,10 @@ _projet de documentation (état provisoire)_
             
         3.  Accessoirement, une transformation Xml2Html pour visualiser le XML en HTML (fichier Xml2Html.xsl)  
             Emploi : xsltproc Xml2Html.xsl docIn.xml > docOut.html  
+            
+        4.  Une DTD pour vérifier la conformité du document XML (fichier `DTD.dtd`)
+            Emploi : xmllint --noout doc.xml --dtdvalid DTD.dtd
+  
               
             
 3.  ### Description informelle
@@ -76,6 +80,7 @@ _projet de documentation (état provisoire)_
                 Section / ལེ་ཚན་ཨ་གྲངས། - contient le n°  
                 TSectFr  / ལེ་ཚན་ཁ་བྱང་།  ཧྥ་སྐད། - contient le titre français  
                 TSectTib / ལེ་ཚན་ཁ་བྱང་།  བོད་ཡིག - contient le titre tibétain.
+                
     2.  #### Entrées
         
         Chaque entrée est représentée en XML par un Element nommé Entrée - en tableur, voir plus loin.  
@@ -153,7 +158,7 @@ _projet de documentation (état provisoire)_
             
     5.  #### Exemples
         
-        Chaque exemple comporte un texte tibétain et de sa traduction en français.  
+        Chaque exemple comporte un texte tibétain et sa traduction en français.  
         L'un comme l'autre se compose d'une liste de synonymes.  
         Les synonymes tibétains portent (de manière facultative) des indications de phonétique et de niveau de langue.  
         Les synonymes français ne portent que le niveau de langue.  
@@ -183,11 +188,67 @@ _projet de documentation (état provisoire)_
                 
     6.  #### Détails
         
-        (à rédiger)  
+        *   Rôle du caractère '྾' (`U+0FBE` = `TIBETAN KU RU KHA`)  
+        Il indique normalement l'absence de synonyme tibétain acceptable : ainsi, pour la vedette "Mesdames, Messieurs", ou dans "Le gel pour
+ les cheveux".  
+ Mais il peut aussi être suivi d'un ou de plusieurs synonymes, ce qui peut surprendre (p.ex. "L’alcool à 90°"). Voici pourquoi :  
+ Certains énoncés tibétains sont en fait du chinois, plus rarement de l'anglais. Cette circonstance est indiquée par la valeur `"chi."` (resp. `"ang."`) de l'attribut `niv`.
+ Souvent, dans le cas du chinois (et dans un seul cas pour l'anglais), 
+l'énoncé en question n'est pas écrit en tibétain, mais en alphabet latin
+ (en pinyin pour le chinois). Si cela se produit dans le premier 
+"synonyme tibétain" de la définition,  le passage de la partie française
+ à la partie tibétaine de la défnition, dans le document Word à 
+l'origine du projet, devient difficile à détecter. Dans ce cas, on a 
+donc inséré un  '྾' postiche pour ne pas compliquer l'analyseur outre 
+mesure. La configuration en question est donc un souvenir de la première
+ étape du projet.
+ 
+        *   Valeurs des attributs `gram`, `niv` et `péj` :
+            1.  `gram` : comme son nom l'indique, contient des indications de genre `m.` ou `f.`, et de nature `n.`, `v.`, `adj.`, `adv.
+            2.  `niv` : le niveau de langue peut être honorifique `H`, très honorifique `HH`, ou familier `fam.`
+Il peut aussi indiquer l'emprunt au chinois `chi.` ou à l'anglais `ang.` : ce choix discutable est facile à modifier.
+            3.  `péj` : si cet attribut est présent, sa valeur est `péj.`, signifiant que l'énoncé visé est réputé péjoratif. <br>
+Serait-il préférable de le ranger aussi dans l'attribut `niv` ?
         
+ 
 4.  ### Spécification formelle
     
-    *   XML : une DTD (en attendant un schéma plus précis)  
-          
+    *   XML : la DTD suivante n'est pas très précise, mais elle peut rendre service.  
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT Vocabulaire (Chapitre+)>
+<!ATTLIST Vocabulaire NomComplet CDATA #REQUIRED>
+<!ELEMENT Chapitre (TitreFr, TitreTib, Section+)>
+<!ATTLIST Chapitre Nom CDATA #REQUIRED>
+<!ELEMENT Section (TitreFr, TitreTib, Entrée+)>
+<!ATTLIST Section Nom CDATA #REQUIRED>
+<!ELEMENT TitreFr (#PCDATA)>
+<!ELEMENT TitreTib (#PCDATA)>
+
+<!ELEMENT Entrée (Définition, Exemple*)>
+<!ELEMENT Définition (DefFr, DefTib)>
+<!ELEMENT DefFr (Vedette, SynDefFr*)>
+<!ELEMENT Vedette (#PCDATA)>
+<!ATTLIST Vedette gram CDATA #IMPLIED>
+<!ATTLIST Vedette niv CDATA #IMPLIED>
+<!ATTLIST Vedette péj CDATA #IMPLIED>
+<!ELEMENT DefTib (SynDefTib)+>
+<!ELEMENT SynDefFr (#PCDATA)>
+<!ELEMENT SynDefTib (#PCDATA)>
+<!ATTLIST SynDefFr gram CDATA #IMPLIED>
+<!ATTLIST SynDefFr niv CDATA #IMPLIED>
+<!ATTLIST SynDefFr péj CDATA #IMPLIED>
+<!ATTLIST SynDefTib gram CDATA #IMPLIED>
+<!ATTLIST SynDefTib niv CDATA #IMPLIED>
+<!ATTLIST SynDefTib phon CDATA #IMPLIED>
+<!ATTLIST SynDefTib péj CDATA #IMPLIED>
+
+<!ELEMENT Exemple (TxtTib, TxtFr)>
+<!ELEMENT TxtTib (SynEx+)>
+<!ELEMENT TxtFr (SynEx+)>
+<!ELEMENT SynEx (#PCDATA)>
+<!ATTLIST SynEx niv CDATA #IMPLIED>
+<!ATTLIST SynEx phon CDATA #IMPLIED>
+```
         
     *   Tableur : une grammaire pour le CSV (à écrire)
